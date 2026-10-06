@@ -1,0 +1,40 @@
+name: CI - Contratos
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+
+jobs:
+  ci:
+    name: Testes, TypeScript e Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar testes
+        run: npm test
+
+      - name: Compilar TypeScript
+        run: npx tsc
+
+      - name: Construir imagem Docker
+        run: docker build -t contratos-api:${{ github.sha }} .
